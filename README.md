@@ -1,58 +1,133 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Review Management Portal
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel application for managing customer reviews through an authenticated admin area. Reviews include a name, position, message, and an optional image. The public home page can present the published review content, while authenticated users can create and update reviews from the dashboard.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Laravel authentication, registration, password reset, email verification, and profile management
+- Authenticated admin dashboard
+- Create, list, edit, and update reviews
+- Optional review image uploads with image validation
+- SQLite development database by default
+- Vite-powered frontend assets with Tailwind CSS and Alpine.js
+- Pest feature and unit tests
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Requirements
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.3 or newer
+- Composer
+- Node.js and npm
+- SQLite, or another database supported by Laravel
 
-## Learning Laravel
+## Installation
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Clone the repository and enter the project directory:
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone <repository-url>
+cd basic
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Create the SQLite database file first:
 
-## Contributing
+```bash
+php -r "file_exists('database/database.sqlite') || touch('database/database.sqlite');"
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Then install the PHP and JavaScript dependencies, create the local environment file, generate the application key, run migrations, and build the frontend assets:
 
-## Code of Conduct
+```bash
+composer run setup
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Running Locally
 
-## Security Vulnerabilities
+Start the Laravel server, queue listener, and Vite development server together:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+composer run dev
+```
+
+The application is available at `http://localhost:8000` by default. To run the services separately, use:
+
+```bash
+php artisan serve
+npm run dev
+```
+
+For a production-style frontend build:
+
+```bash
+npm run build
+```
+
+## Main Routes
+
+| Method | Path | Purpose | Access |
+| --- | --- | --- | --- |
+| GET | `/` | Public home page | Public |
+| GET | `/login` | Login form | Public |
+| GET | `/register` | Registration form | Public |
+| GET | `/dashboard` | Admin dashboard | Authenticated |
+| GET | `/all/review` | List reviews | Authenticated |
+| GET | `/add/review` | New review form | Authenticated |
+| POST | `/store/review` | Save a review | Authenticated |
+| GET | `/edit/review/{id}` | Edit a review | Authenticated |
+| POST | `/update/review` | Update a review | Authenticated |
+| GET | `/profile` | Manage the profile | Authenticated |
+| GET | `/verify` | Custom verification form | Public |
+
+Use the named routes in `routes/web.php` when linking to these pages from application code.
+
+## Review Images
+
+Uploaded review images are validated as images up to 2 MB and stored in `public/upload/review`. The database stores the relative path in the `reviews.image` column. Make sure this directory is writable by the web server in deployed environments.
+
+## Database and Configuration
+
+Copy `.env.example` to `.env` when setting up manually, then configure the database and mail settings for your environment. The default local configuration uses:
+
+- SQLite for the database
+- Database-backed sessions, cache, and queues
+- The log mail driver, which writes outgoing mail to the application log
+
+After changing configuration values, clear cached configuration if needed:
+
+```bash
+php artisan config:clear
+```
+
+## Testing
+
+Run the full Pest test suite with:
+
+```bash
+php artisan test --compact
+```
+
+The test environment must point to an available database. For a local SQLite test database, configure the testing environment accordingly before running the suite.
+
+## Project Structure
+
+- `app/Http/Controllers` - application and admin controllers
+- `app/Models` - Eloquent models, including `Review`
+- `database/migrations` - database schema definitions
+- `database/seeders` - development seed data
+- `resources/views` - Blade templates
+- `resources/js` and `resources/css` - frontend source assets
+- `routes` - web, authentication, and console routes
+- `tests` - Pest feature and unit tests
+
+## Useful Commands
+
+```bash
+php artisan migrate              # Apply database migrations
+php artisan migrate:fresh --seed # Rebuild and seed the database
+php artisan route:list            # Inspect registered routes
+php artisan storage:link          # Create the public storage link when needed
+vendor/bin/pint                   # Format PHP files
+```
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
